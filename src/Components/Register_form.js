@@ -75,6 +75,7 @@ const Register = (props) => {
     const [bornDate, setBornDate] = useState('')
     const [isRunPost, setIsRunPost] = useState(false)
     const [isSubmitModalVisible, setIsSubmitModalVisible] = useState(false)
+    const [registerCheck, setRegisterCheck] = useState(false)
     const [areaOptions, setAreaOptions] = useState([]);
     const [selectArea, setSelectArea] = useState(null);
     // const [isBackLogin, setIsBackLogin] = useState(false)
@@ -94,8 +95,11 @@ const Register = (props) => {
         // console.log(CityAreaScope)
         if (isRunPost) {
             LoginRegisterAxios.post(SighUp_Auth, RegisterData)
-                .then( (response) => console.log(response))
-                .then(() => message.success(`註冊成功`, 2))
+                .then( (response) =>  {
+                    console.log(response)
+                    setRegisterCheck(response['data']['status'])
+                    response['data']['status'] ? message.success(`註冊成功`, 2) : message.error(response['data']['data'])
+                })
                 .catch( (error) => message.error(`${error}`, 2))
 
             setIsRunPost(false)
@@ -324,15 +328,18 @@ const Register = (props) => {
     // }
 
     const onReset = () => {
-        form.resetFields();
-        setIsEnableCityArea(false);
-        setInitCityAreaData([]);
-        setCityAreaScope([]);
-        setIsSubmitModalVisible(false)
-        setIsRegisterModalVisible(false)
-        setRegisterData([]);
-        setRoleCheck([])
-        setShowHide(false)
+        if(registerCheck) {
+            form.resetFields();
+            setIsEnableCityArea(false);
+            setInitCityAreaData([]);
+            setCityAreaScope([]);
+            setIsSubmitModalVisible(false)
+            setIsRegisterModalVisible(false)
+            setRegisterData([]);
+            setRoleCheck([])
+            setShowHide(false)
+        }
+
     };
 
     return (
@@ -726,7 +733,7 @@ const Register = (props) => {
                                ]}
                         >
                             {/*<h2>感謝您註冊成為本平台會員，請登入您個人的Email做帳戶授權驗證，謝謝</h2>*/}
-                            <h2>感謝您註冊成為本平台會員，謝謝</h2>
+                            {registerCheck ? <h2>感謝您註冊成為本平台會員，謝謝</h2> : <h2>註冊失敗，帳號或電子郵件已註冊過</h2>}
                         </Modal>
                     </Form>}
             <Divider/>
